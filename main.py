@@ -1,7 +1,6 @@
 import numpy as np
 import datetime
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import pandas as pd
 import inspect
 import os
@@ -52,7 +51,6 @@ def load_data(stock_symbols):
     return dataframes
 
 
-
 def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
     """
     Plots chart with closing prices of the stocks.
@@ -67,7 +65,7 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
         # filter if start_date is specifies
         if start_date != None:
             start_date : datetime.datetime.strptime(start_date, "%d-%m-%Y")
-            df[1] = df[1][df[1]['Date'] > start_date]
+            df[1] = df[1][df[1]["Date"] > start_date]
 
     # plot stocks
     fig, ax = plt.subplots()
