@@ -90,5 +90,39 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
     plt.show()
 
 
+def donut():
+    files = [f.strip(".csv") for f in os.listdir("./data") if os.path.isfile(os.path.join("./data", f))]
+
+    # get last closing price for each stock
+    data = []
+    for symbol in files:
+        stock = np.genfromtxt(
+            fname="./data/{}.csv".format(symbol),
+            delimiter=",",
+            skip_header=1,
+            dtype=None,
+            usecols=(5),
+            names="Close",
+        )
+
+        df = pd.DataFrame(stock).iloc[-1].astype(float).round(1)
+
+        if not pd.isna(df["Close"]):
+            if symbol != "BRK-A":
+                data.append([symbol, df["Close"].astype(int)])
+
+    # sort by stock prices
+    data.sort(key=lambda x: x[1], reverse=True)
+    data = data[0:10]
+
+    plt.figure(dpi=200)
+    plt.pie([e[1] for e in data], labels=[e[0] for e in data], autopct='%1.1f%%', startangle=90,
+            textprops=dict(fontsize=6))
+    plt.axis('equal')
+    plt.title("Top 10 Stocks by Market Price", loc="left")
+    plt.show()
+
+
 if __name__ == "__main__":
-    compare_stocks(["goog", "amzn"], tick_spacing=200, start_date="01-01-2020")
+    # compare_stocks(["goog", "amzn"], tick_spacing=200, start_date="01-01-2020")
+    donut()
