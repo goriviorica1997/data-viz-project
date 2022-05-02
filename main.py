@@ -63,8 +63,8 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
 
     for df in dataframes:
         # filter if start_date is specifies
-        if start_date != None:
-            start_date : datetime.datetime.strptime(start_date, "%d-%m-%Y")
+        if start_date is not None:
+            start_date: datetime.datetime.strptime(start_date, "%d-%m-%Y")
             df[1] = df[1][df[1]["Date"] > start_date]
 
     # plot stocks
@@ -77,10 +77,10 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
         dates = df[1].iloc[:, 0]
         prices = df[1].iloc[:, 1]
 
-        ax.plot(dates, prices, label = df[0])
+        ax.plot(dates, prices, label=df[0])
 
     # set tick spacing for Y axis, if specified
-    if tick_spacing != None and type(tick_spacing) == int:
+    if tick_spacing is not None and type(tick_spacing) == int:
         plt.gca().yaxis.set_major_locator(plt.MultipleLocator(tick_spacing))
 
     # draw plot
@@ -88,6 +88,7 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
     plt.ylabel("Stock Prices (USD)")
     plt.legend()
     plt.show()
+
 
 if __name__ == "__main__":
     compare_stocks(["goog", "amzn"], tick_spacing=200, start_date="01-01-2020")
