@@ -57,7 +57,6 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
     :param stock_symbols: [str], list of stock symbols
     :param start_date: str, date from which plotting will be done, with format of ""%d-%m-%Y"
     :param tick_spacing: int, tick spacing for the Y axis
-    :return:
     """
     dataframes = load_data(stock_symbols)
 
@@ -91,6 +90,9 @@ def compare_stocks(stock_symbols, start_date=None, tick_spacing=None):
 
 
 def donut():
+    """
+    Plots a donut chart with the first 10 companies by market cap.
+    """
     files = [f.strip(".csv") for f in os.listdir("./data") if os.path.isfile(os.path.join("./data", f))]
 
     # get last closing price for each stock
@@ -109,12 +111,16 @@ def donut():
 
         if not pd.isna(df["Close"]):
             if symbol != "BRK-A":
+                # outlier
                 data.append([symbol, df["Close"].astype(int)])
 
     # sort by stock prices
     data.sort(key=lambda x: x[1], reverse=True)
+
+    # select only first 10 companies
     data = data[0:10]
 
+    # plot
     plt.figure(dpi=200)
     plt.pie([e[1] for e in data], labels=[e[0] for e in data], autopct='%1.1f%%', startangle=90,
             textprops=dict(fontsize=6))
@@ -123,6 +129,67 @@ def donut():
     plt.show()
 
 
+def candlestick(symbol, start_date, end_date):
+    """
+    Plots a candlestick chart for the given stock symbol.
+    :param symbol: company symbol for which to plot the chart
+    :param start_date: start date of the plot
+    :param end_date: end date of the plot
+    """
+    str2date = lambda x: datetime.datetime.strptime(x.decode("utf-8"), "%d-%m-%Y")
+    stock = np.genfromtxt(
+        fname="./data/{}.csv".format(symbol.upper()),
+        delimiter=",",
+        skip_header=1,
+        dtype=None,
+        usecols=(0, 1, 2, 4, 5),
+        names="Date,Low,Open,High,Close",
+        converters={0: str2date}
+    )
+
+    df = pd.DataFrame(stock)
+
+    # restrict to one week of the start_date
+    start_date = datetime.datetime.strptime(start_date, "%d-%m-%Y")
+    end_date = datetime.datetime.strptime(end_date, "%d-%m-%Y")
+
+    # extract prices for the given week
+    mask_dates = (df['Date'] > start_date) & (df['Date'] <= end_date)
+    df = df[mask_dates]
+
+    # create figure
+    plt.figure()
+    plt.figure().set_dpi(200)
+    plt.figure().set_size_inches(20, 10)
+    plt.grid(True, axis="y")
+    plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
+
+    # define width of candlestick elements
+    width = .4
+    width2 = .05
+
+    # define up and down prices
+    up = df[df["Close"] >= df["Open"]]
+    down = df[df["Close"] < df["Open"]]
+
+    # plot up prices
+    plt.bar(up["Date"], up["Close"] - up["Open"], width, bottom=up["Open"], color="green")
+    plt.bar(up["Date"], up["High"] - up["Close"], width2, bottom=up["Close"], color="green")
+    plt.bar(up["Date"], up["Low"] - up["Open"], width2, bottom=up["Open"], color="green")
+
+    # plot down prices
+    plt.bar(down["Date"], down["Close"] - down["Open"], width, bottom=down["Open"], color="red")
+    plt.bar(down["Date"], down["High"] - down["Open"], width2, bottom=down["Open"], color="red")
+    plt.bar(down["Date"], down["Low"] - down["Close"], width2, bottom=down["Close"], color="red")
+
+    # rotate x-axis tick labels
+    plt.xticks(rotation=45, ha='right')
+
+    # display candlestick chart
+    plt.show()
+
+
 if __name__ == "__main__":
-    # compare_stocks(["goog", "amzn"], tick_spacing=200, start_date="01-01-2020")
+    compare_stocks(["goog", "amzn"], tick_spacing=200, start_date="01-01-2020")
     donut()
+    candlestick("amzn", "04-06-2020", "01-07-2020")
