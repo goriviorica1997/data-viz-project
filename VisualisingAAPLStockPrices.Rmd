@@ -1,0 +1,75 @@
+---
+title: "Visualising APPLE Stock Prices "
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+## Introduction 
+
+Trading volume is a measure of how much a given financial asset has traded in a period of time. For stocks, volume is measured in the number of shares traded. For futures and options, volume is based on how many contracts have changed hands. Traders look to volume to determine liquidity and combine changes in volume with technical indicators to make trading decisions.
+
+
+```{r headtail, echo=FALSE}
+library(quantmod)
+getSymbols("AAPL")
+
+head(AAPL)
+
+tail(AAPL)
+
+```
+
+We can see that there are 6 variables for our Dataset or commonly known as the OHLC (Open, high, low and close variables) additionally trading volume and adjusted closing price. 
+
+Let’s start visualizing the data with a basic line chart. Using the command:chartSeries(AAPL)
+
+
+
+```{r chartSeries, echo=FALSE}
+
+chartSeries(AAPL)
+
+```
+
+We want to perform some analysis of the AAPL stock. We obtained the highest price of the stock with the command:seriesHi(AAPL)
+
+
+```{r seriesHi, echo=FALSE}
+
+seriesHi(AAPL)
+
+```
+
+We can visualize the Yearly returns of the stock with:
+
+```{r yearlyReturn, echo=FALSE}
+
+yearlyReturn(AAPL)
+
+```
+
+Applying the line chart, we can visualize the return of the stock:
+
+```{r yearlyReturnAAPL, echo=FALSE}
+
+R <- yearlyReturn(AAPL)
+
+chart_Series(R)
+```
+
+Here, we have the daily return via a histogram. 
+
+
+```{r APPLdaily, echo=FALSE}
+APPLdaily <- dailyReturn(AAPL)
+hist(APPLdaily)
+
+
+```
+
+
+
+## From the histogram, we can conclude that the stock of APPLE has a typical daily movement of within 0.05% to -0.05.
+
